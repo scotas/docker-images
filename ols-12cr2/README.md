@@ -5,7 +5,7 @@ Sample Docker build files to facilitate installation, configuration, and environ
 
 ## How to build and run
 This project offers sample Dockerfiles for:
- * Scotas OLS on top of Oracle Database 12c Release 1 (12.2.0.1) Enterprise Edition
+ * Scotas OLS on top of Oracle Database 12c Release 2 (12.2.0.1) Enterprise Edition
 
 To assist in building the images, you can use the [buildDockerImage.sh](buildDockerImage.sh) script. See below for instructions and usage.
 
