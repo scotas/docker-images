@@ -1,0 +1,23 @@
+# Before building this image oracle/database:12.1.0.2-ee must be available at your private registry
+# See https://github.com/oracle/docker-images/blob/master/OracleDatabase/README.md for more details
+# Finally build using ./buildDockerImage.sh script
+
+FROM	oracle/database:12.1.0.2-ee
+MAINTAINER mochoa@scotas.com
+
+USER	root
+RUN	yum -y --enablerepo ol7_optional_latest install ant ant-contrib ant-junit apache-ivy && \
+	yum clean all
+
+ADD     http://www.scotas.com/download/ols/ODCI.jar /home/oracle/
+RUN	mv $ORACLE_HOME/rdbms/jlib/ODCI.jar $ORACLE_HOME/rdbms/jlib/ODCI.jar.bak && \
+	mv /home/oracle/ODCI.jar $ORACLE_HOME/rdbms/jlib/ODCI.jar && \
+	chown oracle:oinstall $ORACLE_HOME/rdbms/jlib/ODCI.jar
+
+ENV	JAVA_HOME=$ORACLE_HOME/jdk
+
+WORKDIR	/home
+USER	oracle
+
+# Define default command to start Oracle Database. 
+CMD	exec /bin/bash
