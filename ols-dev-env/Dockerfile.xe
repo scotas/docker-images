@@ -1,0 +1,13 @@
+# Before building this image oracle/database:11.2.0.2-xe must be available at your private registry
+# See https://github.com/oracle/docker-images/blob/master/OracleDatabase/README.md for more details
+# Finally build using ./buildDockerImageXE.sh script
+
+FROM	oracle/database:11.2.0.2-xe
+MAINTAINER mochoa@scotas.com
+
+USER	root
+RUN	yum -y --enablerepo ol7_optional_latest install ant ant-contrib ant-junit apache-ivy && \
+	yum clean all && groupadd -g 54321 dba-dev && useradd -u 54321 -g 54321 oracle-dev
+
+# Define default command to start Oracle Database. 
+CMD	su oracle-dev -c /bin/bash
