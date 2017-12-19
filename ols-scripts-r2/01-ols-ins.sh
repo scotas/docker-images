@@ -4,14 +4,6 @@ ANT_VERSION=1.10.1
 export ANT_HOME=/home/oracle/apache-ant-"$ANT_VERSION"
 export JAVA_HOME=$ORACLE_HOME/jdk
 
-echo "export ORACLE_SID=$ORACLE_SID" >>/home/oracle/.bashrc
-echo "export ORACLE_PDB=$ORACLE_PDB" >>/home/oracle/.bashrc
-echo "export ANT_HOME=$ANT_HOME" >>/home/oracle/.bashrc
-echo "export JAVA_HOME=$JAVA_HOME" >>/home/oracle/.bashrc
-echo "export PATH=$JAVA_HOME/bin:$ANT_HOME/bin:$ORACLE_HOME/bin:$ORACLE_HOME/OPatch/:/usr/sbin:$PATH" >>/home/oracle/.bashrc
-echo "export LD_LIBRARY_PATH=$ORACLE_HOME/lib:/usr/lib"  >>/home/oracle/.bashrc
-echo "export CLASSPATH=$ANT_HOME/lib:$ORACLE_HOME/jlib:$ORACLE_HOME/rdbms/jlib" >>/home/oracle/.bashrc
-
 export PATH=$JAVA_HOME/bin:$ANT_HOME/bin:$ORACLE_HOME/bin:$ORACLE_HOME/OPatch/:/usr/sbin:$PATH
 export LD_LIBRARY_PATH=$ORACLE_HOME/lib:/usr/lib
 export CLASSPATH=$ANT_HOME/lib:$ORACLE_HOME/jlib:$ORACLE_HOME/rdbms/jlib

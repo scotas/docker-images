@@ -21,19 +21,3 @@ cp $ORACLE_HOME/inventory/Scripts/ext/jlib/ojdbc8.jar $ORACLE_HOME/jdbc/lib/ojdb
 chmod a+r $ORACLE_HOME/jdbc/lib/ojdbc8.jar
 ln -s $ORACLE_HOME/jdbc/lib/ojdbc8.jar $ORACLE_HOME/jdbc/lib/ojdbc6.jar
 
-echo "export ORACLE_BASE=$ORACLE_BASE" >>/home/oracle/.bashrc
-echo "export ORACLE_HOME=$ORACLE_HOME" >>/home/oracle/.bashrc
-echo "export INSTALL_FILE_1=$INSTALL_FILE_1" >>/home/oracle/.bashrc
-echo "export INSTALL_RSP=$INSTALL_RSP" >>/home/oracle/.bashrc
-echo "export CONFIG_RSP=$CONFIG_RSP" >>/home/oracle/.bashrc
-echo "export PWD_FILE=$PWD_FILE" >>/home/oracle/.bashrc
-echo "export RUN_FILE=$RUN_FILE" >>/home/oracle/.bashrc
-echo "export START_FILE=$START_FILE" >>/home/oracle/.bashrc
-echo "export CREATE_DB_FILE=$CREATE_DB_FILE" >>/home/oracle/.bashrc
-echo "export SETUP_LINUX_FILE=$SETUP_LINUX_FILE" >>/home/oracle/.bashrc
-echo "export CHECK_SPACE_FILE=$CHECK_SPACE_FILE" >>/home/oracle/.bashrc
-echo "export CHECK_DB_FILE=$CHECK_DB_FILE" >>/home/oracle/.bashrc
-echo "export USER_SCRIPTS_FILE=$USER_SCRIPTS_FILE" >>/home/oracle/.bashrc
-echo "export INSTALL_DB_BINARIES_FILE=$INSTALL_DB_BINARIES_FILE" >>/home/oracle/.bashrc
-echo "export INSTALL_DIR=$INSTALL_DIR" >>/home/oracle/.bashrc
-
