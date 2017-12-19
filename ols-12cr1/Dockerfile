@@ -50,6 +50,7 @@ RUN	echo "export ORACLE_BASE=$ORACLE_BASE" >>/home/oracle/.bashrc && \
 	echo "export CHECK_SPACE_FILE=$CHECK_SPACE_FILE" >>/home/oracle/.bashrc && \
 	echo "export CHECK_DB_FILE=$CHECK_DB_FILE" >>/home/oracle/.bashrc && \
         echo "export INSTALL_DB_BINARIES_FILE=$INSTALL_DB_BINARIES_FILE" >>/home/oracle/.bashrc && \
+        echo "export USER_SCRIPTS_FILE=$USER_SCRIPTS_FILE" >>/home/oracle/.bashrc && \
 	echo "export PATH=$ORACLE_HOME/bin:$ORACLE_HOME/OPatch/:/usr/sbin:$PATH" >>/home/oracle/.bashrc && \
 	echo "export LD_LIBRARY_PATH=$ORACLE_HOME/lib:/usr/lib"  >>/home/oracle/.bashrc && \
 	echo "export CLASSPATH=$ORACLE_HOME/jlib:$ORACLE_HOME/rdbms/jlib" >>/home/oracle/.bashrc
