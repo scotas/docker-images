@@ -12,6 +12,9 @@ RUN	yum -y --enablerepo ol7_optional_latest install ant ant-contrib ant-junit ap
 ADD     http://www.scotas.com/download/ols/ODCI.jar /home/oracle/
 RUN	mv $ORACLE_HOME/rdbms/jlib/ODCI.jar $ORACLE_HOME/rdbms/jlib/ODCI.jar.bak && \
 	mv /home/oracle/ODCI.jar $ORACLE_HOME/rdbms/jlib/ODCI.jar && \
+	mkdir -p $ORACLE_HOME/jdbc/lib && \
+	cp $ORACLE_HOME/inventory/Scripts/ext/jlib/ojdbc6.jar $ORACLE_HOME/jdbc/lib && \
+	chmod a+r $ORACLE_HOME/jdbc/lib/ojdbc6.jar && \
 	chown oracle:oinstall $ORACLE_HOME/rdbms/jlib/ODCI.jar
 
 ENV	JAVA_HOME=$ORACLE_HOME/jdk
