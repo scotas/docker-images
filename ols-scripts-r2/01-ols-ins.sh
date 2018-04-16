@@ -1,5 +1,5 @@
 #!/bin/bash
-ANT_VERSION=1.10.1
+ANT_VERSION=1.10.3
 
 export ANT_HOME=/home/oracle/apache-ant-"$ANT_VERSION"
 export JAVA_HOME=$ORACLE_HOME/jdk
