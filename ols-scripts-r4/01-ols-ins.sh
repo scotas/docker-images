@@ -20,7 +20,7 @@ su -p oracle -c "$ORACLE_HOME/perl/bin/perl $ORACLE_HOME/rdbms/admin/catcon.pl -
 echo "ODCI patched"
 
 echo "Installing OLS..."
-cd ols;ant -Ddba.usr=sys -Ddba.pwd=$ORACLE_PWD -Ddb.str=$ORACLE_PDB install-ols >/home/oracle/install-OLS.log 2>/home/oracle/install-OLS.err
+cd /home/oracle/ols;ant -Ddba.usr=sys -Ddba.pwd=$ORACLE_PWD -Ddb.str=${ORACLE_PDB:-XEPDB1} install-ols >/home/oracle/install-OLS.log 2>/home/oracle/install-OLS.err
 echo "OLS installed see /home/oracle/install-OLS.log and /home/oracle/install-OLS.err files for details"
 
 touch $ORACLE_BASE/oradata/$ORACLE_SID/OLS_IS_INSTALLED
