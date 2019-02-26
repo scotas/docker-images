@@ -1,0 +1,75 @@
+version: '3.6'
+services:
+  solr:
+    image: solr:latest
+    hostname: solr
+    ports:
+      - 8983:8983
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+        window: 120s
+  db:
+    image: oracle/database:18.4.0-xe
+    hostname: pc
+    volumes:
+      - db_data:/opt/oracle/oradata # persistent oracle database data.
+      - /run/shm:/dev/shm
+    ports:
+      - 1521:1521
+    environment:
+      - ORACLE_PWD=Oracle_2018
+      - SOLR_HOST=solr
+      - SOLR_PORT=8983
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+        window: 120s
+    healthcheck:
+      test: exit 0
+      interval: 60s
+      timeout: 3s
+    configs:
+      - source: 00-unzip-pc
+        target: /opt/oracle/scripts/setup/00-unzip-pc.sh
+      - source: 01-pc-ins
+        target: /opt/oracle/scripts/setup/01-pc-ins.sh
+      - source: 02-clean-up-files
+        target: /opt/oracle/scripts/setup/02-clean-up-files.sh
+  dev:
+    image: ols-dev:2.0.4
+    command: ping 8.8.8.8
+    hostname: dev
+    volumes:
+      - /home/oracle/github:/home/ols # Push connector source
+    environment:
+      - ORACLE_PWD=Oracle_2018
+      - SOLR_HOST=solr
+      - SOLR_PORT=8983
+    deploy:
+      mode: replicated
+      replicas: 0
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+        window: 120s
+    healthcheck:
+      test: exit 0
+      interval: 60s
+      timeout: 3s
+configs:
+  00-unzip-pc:
+      external: true
+  01-pc-ins:
+      external: true
+  02-clean-up-files:
+      external: true
+volumes:
+  db_data:
+
