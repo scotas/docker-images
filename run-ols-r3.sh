@@ -1,5 +1,5 @@
 #!/bin/bash
-docker run -d -v /dev/shm --tmpfs /dev/shm:rw,nosuid,nodev,exec,size=1g \
+docker run -d -v /run/shm:/dev/shm \
 --name test18c --hostname test18c \
 -e ORACLE_PWD=Oracle_2017 \
 -e ORACLE_SID=TEST \
