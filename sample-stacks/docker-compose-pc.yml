@@ -4,7 +4,7 @@ services:
     image: solr:latest
     hostname: solr
     volumes:
-      - solr_data:/opt/solr/server/solr # persistent solr data.
+      - solr_data:/var/solr/data # persistent solr data. UID/GID 8983:8983
     ports:
       - 8983:8983
     deploy:
@@ -18,7 +18,7 @@ services:
     image: oracle/database:18.4.0-xe
     hostname: pc
     volumes:
-      - db_data:/opt/oracle/oradata # persistent oracle database data.
+      - db_data:/opt/oracle/oradata # persistent oracle database data. UID/GID 54321:54321
       - /run/shm:/dev/shm
     ports:
       - 1521:1521
