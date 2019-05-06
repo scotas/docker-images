@@ -1,0 +1,30 @@
+version: '3.6'
+services:
+  db:
+    image: oracle/database:19.3.0-ee
+#    command: /opt/oracle/scripts/startup/migrate.sh upgrade
+#    image: oracle/database:12.2.0.1-ee
+    hostname: ols
+    volumes:
+      - /home/data/db/12cR2.test:/opt/oracle/oradata # persistent oracle database data.
+      - /home/oracle/autoupgrade.jar:/opt/oracle/scripts/startup/autoupgrade.jar
+      - /home/oracle/migrate.conf:/opt/oracle/scripts/startup/migrate.conf
+#      - /home/oracle/migrate.sh:/opt/oracle/scripts/startup/migrate.sh
+      - /run/shm:/dev/shm
+    ports:
+      - 1521:1521
+    environment:
+      - ORACLE_PWD=Oracle_2017
+      - ORACLE_SID=TEST
+      - ORACLE_PDB=PDB1
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+        window: 120s
+    healthcheck:
+      test: exit 0
+      interval: 60s
+      timeout: 3s

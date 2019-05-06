@@ -3,6 +3,8 @@ services:
   solr:
     image: solr:latest
     hostname: solr
+    volumes:
+      - solr_data:/opt/solr/server/solr # persistent solr data.
     ports:
       - 8983:8983
     deploy:
@@ -36,11 +38,11 @@ services:
       interval: 60s
       timeout: 3s
     configs:
-      - source: 00-unzip-pc
+      - source: 00-unzip-pc.sh
         target: /opt/oracle/scripts/setup/00-unzip-pc.sh
-      - source: 01-pc-ins
+      - source: 01-pc-ins.sh
         target: /opt/oracle/scripts/setup/01-pc-ins.sh
-      - source: 02-clean-up-files
+      - source: 02-clean-up-files.sh
         target: /opt/oracle/scripts/setup/02-clean-up-files.sh
   dev:
     image: ols-dev:2.0.4
@@ -64,12 +66,20 @@ services:
       interval: 60s
       timeout: 3s
 configs:
-  00-unzip-pc:
+  00-unzip-pc.sh:
       external: true
-  01-pc-ins:
+  01-pc-ins.sh:
       external: true
-  02-clean-up-files:
+  02-clean-up-files.sh:
       external: true
 volumes:
   db_data:
-
+    driver_opts:
+      type: none
+      device: /home/data/db/xe-18c-pc 
+      o: bind
+  solr_data:
+    driver_opts:
+      type: none
+      device: /home/data/solr 
+      o: bind
