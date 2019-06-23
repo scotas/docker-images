@@ -1,0 +1,43 @@
+version: '3.6'
+services:
+  db:
+    image: oracle/database:19.3.0-ee
+    hostname: pc
+    volumes:
+      - db_data:/opt/oracle/oradata # persistent oracle database data. UID/GID 54321:54321
+      - /run/shm:/dev/shm
+    ports:
+      - 1521:1521
+    environment:
+      - ORACLE_PWD=Oracle_2019
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+        window: 120s
+    healthcheck:
+      test: exit 0
+      interval: 60s
+      timeout: 3s
+    configs:
+      - source: 00-unzip-ols.sh
+        target: /opt/oracle/scripts/setup/00-unzip-ols.sh
+      - source: 01-ols-ins.sh
+        target: /opt/oracle/scripts/setup/01-ols-ins.sh
+      - source: 02-clean-up-ols-files.sh
+        target: /opt/oracle/scripts/setup/02-clean-up-ols-files.sh
+configs:
+  00-unzip-ols.sh:
+      external: true
+  01-ols-ins.sh:
+      external: true
+  02-clean-up-ols-files.sh:
+      external: true
+volumes:
+  db_data:
+    driver_opts:
+      type: none
+      device: /home/data/db/19c-ols 
+      o: bind
