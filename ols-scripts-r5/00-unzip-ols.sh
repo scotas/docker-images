@@ -18,4 +18,3 @@ cp /home/oracle/ant-contrib/ant-contrib-"$ANT_CONTRIB_VERSION".jar /home/oracle/
 cp /home/oracle/valid.ols /home/oracle/ols/bin/com/scotas/license
 rm -f $ORACLE_HOME/jdbc/lib/ojdbc6.jar
 ln -s $ORACLE_HOME/jdbc/lib/ojdbc8.jar $ORACLE_HOME/jdbc/lib/ojdbc6.jar
-
