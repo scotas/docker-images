@@ -2,14 +2,15 @@ version: '3.6'
 services:
   db:
     image: oracle/database:19.3.0-ee
-    hostname: pc
+    hostname: ols
     volumes:
       - db_data:/opt/oracle/oradata # persistent oracle database data. UID/GID 54321:54321
       - /run/shm:/dev/shm
     ports:
       - 1521:1521
+      - 9099:9099
     environment:
-      - ORACLE_PWD=Oracle_2019
+      - ORACLE_PWD=Oracle_2019      # Remove after first run
     deploy:
       mode: replicated
       replicas: 1
@@ -18,7 +19,7 @@ services:
         max_attempts: 3
         window: 120s
     healthcheck:
-      test: exit 0
+      test: exit 0                  # Remove after first run
       interval: 60s
       timeout: 3s
     configs:
@@ -33,9 +34,7 @@ services:
     command: ping 127.0.0.1
     hostname: dev
     volumes:
-      - /home/oracle/github/ols:/home/ols                                # OLS source
-      - /home/oracle/lucene_solr_4_0/solr:/home/solr     # Solr 4.0 source
-      - /home/oracle/lucene_solr_4_0/lucene:/home/lucene # Lucene 4.0 source
+      - /home/oracle/github/ols:/home/ols                # OLS source
     environment:
       - ORACLE_PWD=Oracle_2019
     deploy:
