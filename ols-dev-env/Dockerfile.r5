@@ -1,9 +1,31 @@
 # Before building this image oracle/database:19.3.0-ee must be available at your private registry
 # See https://github.com/marcelo-ochoa/docker-images/blob/master/OracleDatabase/README.md for more details
 # Finally build using ./buildDockerImage.sh script
+FROM alpine:latest AS Solr40Source
+LABEL maintainer="Marcelo Ochoa <mochoa@scotas.com>"
+
+RUN apk add --update subversion curl && rm -rf /var/cache/apk/*
+
+WORKDIR /src
+RUN	svn co http://svn.apache.org/repos/asf/lucene/dev/branches/lucene_solr_4_0
+ADD	ols-solr-lucene.patch /src/lucene_solr_4_0/
+WORKDIR /src/lucene_solr_4_0
+RUN	svn patch /src/lucene_solr_4_0/ols-solr-lucene.patch
+
+FROM alpine/git:latest AS OLSSource
+LABEL maintainer="Marcelo Ochoa <mochoa@scotas.com>"
+ARG REPO_URL
+ENV REPO_URL ${REPO_URL:-https://github.com/scotas/ols.git}
+ARG BRANCH
+ENV BRANCH ${BRANCH:-master}
+
+WORKDIR /src
+
+# Clone GitHub Repo from an specific branch
+RUN git clone -b $BRANCH $REPO_URL
 
 FROM	oracle/database:19.3.0-ee
-MAINTAINER mochoa@scotas.com
+LABEL maintainer="Marcelo Ochoa <mochoa@scotas.com>"
 
 USER	root
 RUN	yum -y --enablerepo ol7_optional_latest install ant ant-contrib ant-junit apache-ivy subversion && \
@@ -13,18 +35,19 @@ ADD	http://www.scotas.com/download/ols/19cR3/ODCI.jar /home/oracle/
 ADD	http://www.scotas.com/download/ols/19cR3/converter.jar /home/oracle/
 ADD	http://www.scotas.com/download/ols/19cR3/initsoxx.sql /home/oracle/
 ADD	http://www.scotas.com/download/ols/19cR3/translator.jar /home/oracle/
-ADD	ols-solr-lucene.patch /home/oracle/
+
+# Source of Apache Solr/Lucene
+COPY --from=Solr40Source --chown=oracle:oinstall /src/lucene_solr_4_0/ /home/oracle/lucene_solr_4_0/
+
+# Source of Scotas OLS
+COPY --from=OLSSource --chown=oracle:oinstall /src/ols/ /home/ols/
 
 RUN	ln -s /home/oracle/lucene_solr_4_0/solr /home/solr && \
-        ln -s /home/oracle/lucene_solr_4_0/lucene /home/lucene && \
-	chown -R oracle:oinstall /home/oracle && \
-        mkdir /home/ols
+    ln -s /home/oracle/lucene_solr_4_0/lucene /home/lucene && \
+	  chown -R oracle:oinstall /home/oracle
 
 USER	oracle
 WORKDIR	/home/oracle
-
-# Source of Apache Solr/Lucene
-RUN	svn co http://svn.apache.org/repos/asf/lucene/dev/branches/lucene_solr_4_0
 
 # Required libs for compiling
 RUN	mv $ORACLE_HOME/rdbms/jlib/ODCI.jar $ORACLE_HOME/rdbms/jlib/ODCI.jar.bak && \
@@ -45,14 +68,8 @@ RUN	mv $ORACLE_HOME/rdbms/jlib/ODCI.jar $ORACLE_HOME/rdbms/jlib/ODCI.jar.bak && 
 
 ENV	JAVA_HOME=$ORACLE_HOME/jdk LD_LIBRARY_PATH=$ORACLE_HOME/lib
 
-WORKDIR	/home/oracle/lucene_solr_4_0
-RUN	svn patch /home/oracle/ols-solr-lucene.patch
-
 WORKDIR	/home
 USER	oracle
-
-# Source of Scotas OLS (git co https://github.com/scotas/ols.git)
-VOLUME [/home/ols]
 
 # Define default command to start Oracle Database. 
 CMD	exec /bin/bash
