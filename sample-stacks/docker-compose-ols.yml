@@ -33,8 +33,8 @@ services:
     image: ols-dev:2.0.5
     command: ping 127.0.0.1
     hostname: dev
-    volumes:
-      - /home/oracle/github/ols:/home/ols                # OLS source
+#    volumes:
+#      - /home/oracle/github/ols:/home/ols                # OLS source, uncomment if you want to work with live source code
     environment:
       - ORACLE_PWD=Oracle_2019
     deploy:
