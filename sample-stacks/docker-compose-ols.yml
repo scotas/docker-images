@@ -50,11 +50,11 @@ services:
       timeout: 3s
 configs:
   00-unzip-ols.sh:
-      external: true
+      file: ../ols-scripts-r5/00-unzip-ols.sh
   01-ols-ins.sh:
-      external: true
+      file: ../ols-scripts-r5/01-ols-ins.sh
   02-clean-up-ols-files.sh:
-      external: true
+      file: ../ols-scripts-r5/02-clean-up-ols-files.sh
 volumes:
   db_data:
     driver_opts:
