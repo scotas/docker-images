@@ -23,5 +23,9 @@ echo "Installing OLS..."
 cd /home/oracle/ols;ant -Ddba.usr=sys -Ddba.pwd=$ORACLE_PWD -Ddb.str=${ORACLE_PDB:-ORCLPDB1} install-ols >/home/oracle/install-OLS.log 2>/home/oracle/install-OLS.err
 echo "OLS installed see /home/oracle/install-OLS.log and /home/oracle/install-OLS.err files for details"
 
+sqlplus sys/$ORACLE_PWD@${ORACLE_PDB:-ORCLPDB1} as sysdba <<EOF
+ALTER USER LUCENE NO AUTHENTICATION;
+EOF
+
 echo "2.0.5" > $ORACLE_BASE/oradata/$ORACLE_SID/OLS_IS_INSTALLED
 echo "OLS Installed OK...."

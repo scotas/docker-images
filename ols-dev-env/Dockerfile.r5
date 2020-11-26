@@ -17,7 +17,7 @@ LABEL maintainer="Marcelo Ochoa <mochoa@scotas.com>"
 ARG REPO_URL
 ENV REPO_URL ${REPO_URL:-https://github.com/scotas/ols.git}
 ARG BRANCH
-ENV BRANCH ${BRANCH:-master}
+ENV BRANCH ${BRANCH:-v2.0.5}
 
 WORKDIR /src
 
@@ -26,15 +26,18 @@ RUN git clone -b $BRANCH $REPO_URL
 
 FROM	oracle/database:19.3.0-ee
 LABEL maintainer="Marcelo Ochoa <mochoa@scotas.com>"
+ARG BRANCH
+ENV BRANCH ${BRANCH:-v2.0.5}
 
 USER	root
 RUN	yum -y --enablerepo ol7_optional_latest install ant ant-contrib ant-junit apache-ivy subversion && \
 	yum clean all
 
-ADD	http://www.scotas.com/download/ols/19cR3/ODCI.jar /home/oracle/
-ADD	http://www.scotas.com/download/ols/19cR3/converter.jar /home/oracle/
-ADD	http://www.scotas.com/download/ols/19cR3/initsoxx.sql /home/oracle/
-ADD	http://www.scotas.com/download/ols/19cR3/translator.jar /home/oracle/
+ADD	https://github.com/scotas/ols/releases/download/$BRANCH/ODCI.jar /home/oracle/
+ADD	https://github.com/scotas/ols/releases/download/$BRANCH/converter.jar /home/oracle/
+ADD	https://github.com/scotas/ols/releases/download/$BRANCH/initsoxx.sql /home/oracle/
+ADD	https://github.com/scotas/ols/releases/download/$BRANCH/translator.jar /home/oracle/
+ADD	https://github.com/scotas/ols/releases/download/$BRANCH/valid.ols /home/oracle/
 
 # Source of Apache Solr/Lucene
 COPY --from=Solr40Source --chown=oracle:oinstall /src/lucene_solr_4_0/ /home/oracle/lucene_solr_4_0/
@@ -44,7 +47,7 @@ COPY --from=OLSSource --chown=oracle:oinstall /src/ols/ /home/ols/
 
 RUN	ln -s /home/oracle/lucene_solr_4_0/solr /home/solr && \
     ln -s /home/oracle/lucene_solr_4_0/lucene /home/lucene && \
-	  chown -R oracle:oinstall /home/oracle
+	chown -R oracle:oinstall /home/oracle
 
 USER	oracle
 WORKDIR	/home/oracle
@@ -56,6 +59,8 @@ RUN	mv $ORACLE_HOME/rdbms/jlib/ODCI.jar $ORACLE_HOME/rdbms/jlib/ODCI.jar.bak && 
 	mv /home/oracle/initsoxx.sql $ORACLE_HOME/rdbms/admin/initsoxx.sql && \
 	mv /home/oracle/converter.jar $ORACLE_HOME/rdbms/jlib/converter.jar && \
 	mv /home/oracle/translator.jar $ORACLE_HOME/rdbms/jlib/translator.jar && \
+	mkdir -p /home/ols/bin/com/scotas/license && \
+	mv /home/oracle/valid.ols /home/ols/bin/com/scotas/license && \
 	ln -s $ORACLE_HOME/jdbc/lib/ojdbc8.jar $ORACLE_HOME/jdbc/lib/ojdbc6.jar && \
     echo "ORCLPDB1= \
 (DESCRIPTION = \
