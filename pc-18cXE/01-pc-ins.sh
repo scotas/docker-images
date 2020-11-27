@@ -7,6 +7,7 @@ if [ ! -f "$FILE" ]; then
     export SOLR_PORT=${SOLR_PORT:-"8983"}
     su -p oracle -c "sqlplus / as sysdba <<EOF
 ALTER SESSION SET CONTAINER = ${ORACLE_PDB:-XEPDB1};
+ALTER USER PC NO AUTHENTICATION;
 @db/change-deployment-server.plb solr $SOLR_HOST $SOLR_PORT
 EOF"
 
