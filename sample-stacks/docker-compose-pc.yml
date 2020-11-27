@@ -48,8 +48,8 @@ services:
     image: ols-dev:2.0.4
     command: ping 8.8.8.8
     hostname: dev
-    volumes:
-      - /home/oracle/github:/home/ols # Push connector source
+#    volumes:
+#      - /home/oracle/github/pc:/home/pc # Push connector source
     environment:
       - ORACLE_PWD=Oracle_2018
       - SOLR_HOST=solr
@@ -67,11 +67,11 @@ services:
       timeout: 3s
 configs:
   00-unzip-pc.sh:
-      external: true
+      file: ../pc-18cXE/00-unzip-pc.sh
   01-pc-ins.sh:
-      external: true
+      file: ../pc-18cXE/01-pc-ins.sh
   02-clean-up-files.sh:
-      external: true
+      file: ../pc-18cXE/02-clean-up-files.sh
 volumes:
   db_data:
     driver_opts:
