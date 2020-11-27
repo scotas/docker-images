@@ -1,19 +1,34 @@
-# Before building this image oracle/database:18.0.0.0-ee must be available at your private registry
+# Before building this image oracle/database:18.4.0-xe must be available at your private registry
 # See https://github.com/marcelo-ochoa/docker-images/blob/master/OracleDatabase/README.md for more details
 # Finally build using ./buildDockerImage.sh script
+FROM alpine/git:latest AS PCSource
+LABEL maintainer="Marcelo Ochoa <mochoa@scotas.com>"
+ARG REPO_URL
+ENV REPO_URL ${REPO_URL:-https://github.com/scotas/pc.git}
+ARG BRANCH
+ENV BRANCH ${BRANCH:-master}
+
+WORKDIR /src
+
+# Clone GitHub Repo from an specific branch
+RUN git clone -b $BRANCH $REPO_URL
 
 FROM	oracle/database:18.4.0-xe
-MAINTAINER mochoa@scotas.com
+LABEL maintainer="Marcelo Ochoa <mochoa@scotas.com>"
 
 USER	root
 RUN	yum -y --enablerepo ol7_optional_latest install ant ant-contrib ant-junit apache-ivy && \
 	yum clean all
 
-ADD http://www.scotas.com/download/ols/18cR1/ODCI.jar /home/oracle/
-ADD http://www.scotas.com/download/ols/18cR1/converter.jar /home/oracle/
-ADD http://www.scotas.com/download/ols/18cR1/initsoxx.sql /home/oracle/
-ADD http://www.scotas.com/download/ols/18cR1/translator.jar /home/oracle/
-ADD http://www.scotas.com/download/ols/18cR1/sqljutl.sql /home/oracle/
+ADD https://www.scotas.com/download/ols/18cR1/ODCI.jar /home/oracle/
+ADD https://www.scotas.com/download/ols/18cR1/converter.jar /home/oracle/
+ADD https://www.scotas.com/download/ols/18cR1/initsoxx.sql /home/oracle/
+ADD https://www.scotas.com/download/ols/18cR1/translator.jar /home/oracle/
+ADD https://www.scotas.com/download/ols/18cR1/sqljutl.sql /home/oracle/
+
+# Source of Scotas PC
+COPY --from=PCSource --chown=oracle:oinstall /src/pc/ /home/pc/
+
 RUN	mv $ORACLE_HOME/rdbms/jlib/ODCI.jar $ORACLE_HOME/rdbms/jlib/ODCI.jar.bak && \
 	mv /home/oracle/ODCI.jar $ORACLE_HOME/rdbms/jlib/ODCI.jar && \
 	mv /home/oracle/converter.jar $ORACLE_HOME/rdbms/jlib/converter.jar && \
@@ -34,7 +49,7 @@ RUN	mv $ORACLE_HOME/rdbms/jlib/ODCI.jar $ORACLE_HOME/rdbms/jlib/ODCI.jar.bak && 
 	chown -R oracle:oinstall /home/oracle && \
         echo "XEPDB1= \
 (DESCRIPTION = \
-  (ADDRESS = (PROTOCOL = TCP)(HOST = ols)(PORT = 1521)) \
+  (ADDRESS = (PROTOCOL = TCP)(HOST = db)(PORT = 1521)) \
   (CONNECT_DATA = \
     (SERVER = DEDICATED) \
     (SERVICE_NAME = XEPDB1) \
