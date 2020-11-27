@@ -1,5 +1,7 @@
 #!/bin/bash
+OLS_VERSION=2.0.5
 ANT_VERSION=1.10.9
+ANT_CONTRIB_VERSION=1.0b3
 
 export ANT_HOME=/home/oracle/apache-ant-"$ANT_VERSION"
 export JAVA_HOME=$ORACLE_HOME/jdk
@@ -27,5 +29,5 @@ sqlplus sys/$ORACLE_PWD@${ORACLE_PDB:-ORCLPDB1} as sysdba <<EOF
 ALTER USER LUCENE NO AUTHENTICATION;
 EOF
 
-echo "2.0.5" > $ORACLE_BASE/oradata/$ORACLE_SID/OLS_IS_INSTALLED
+echo "$OLS_VERSION" > $ORACLE_BASE/oradata/$ORACLE_SID/OLS_IS_INSTALLED
 echo "OLS Installed OK...."
