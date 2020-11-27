@@ -25,7 +25,7 @@ echo "Installing OLS..."
 cd /home/oracle/ols;ant -Ddba.usr=sys -Ddba.pwd=$ORACLE_PWD -Ddb.str=${ORACLE_PDB:-XEPDB1} install-ols >/home/oracle/install-OLS.log 2>/home/oracle/install-OLS.err
 echo "OLS installed see /home/oracle/install-OLS.log and /home/oracle/install-OLS.err files for details"
 
-su -p oracle -c "sqlplus sys/$ORACLE_PWD@${ORACLE_PDB:-ORCLPDB1} as sysdba"<<EOF
+su -p oracle -c "sqlplus sys/$ORACLE_PWD@${ORACLE_PDB:-XEPDB1} as sysdba"<<EOF
 ALTER USER LUCENE NO AUTHENTICATION;
 EOF
 
