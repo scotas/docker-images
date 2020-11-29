@@ -21,11 +21,11 @@ oracle/database                                                    18.4.0-xe    
 
 ## Using Docker Extension on Dev Container
 
-To use Docker Extension for VSCode when using this project you have to check that the group id of docker is equal to the enviroment variable defined in [docker-compose.yml](.devcontainer/docker-compose.yml) file *DOCKER_GID: 999*
+To use Docker Extension for VSCode when using this project you have to check that the group id of docker is equal to the enviroment variable defined in [docker-compose.yml](.devcontainer/docker-compose.yml#L14) file *DOCKER_GID: 999*
 
 ## Persistent volume for your Oracle Datafiles
 
-Among with the dev container an Oracle RDBMS XE database is started if you want to re-use RDBMS datafiles across other containers check mount volume:
+Among with the dev container an Oracle RDBMS XE database is started if you want to re-use RDBMS datafiles across other containers check mount volume defined on [docker-compose.yml](.devcontainer/docker-compose.yml#L44):
 
 - /home/data/db/xe-18c:/opt/oracle/oradata
 
@@ -39,7 +39,7 @@ drwxr-xr-x  2 oracle oinstall 4096 jul  2 19:29 .
 
 ## Sources included in this image
 
-By default this dev container project is using tag *v2.0.5* when building the image, you can change to other tagged release by changing *BRANCH: "v2.0.5"* argument in [docker-compose.yml](.devcontainer/docker-compose.yml) file.
+By default this dev container project is using tag *v2.0.5* when building the image, you can change to other tagged release by changing *BRANCH: "v2.0.5"* argument in [docker-compose.yml](.devcontainer/docker-compose.yml#L11) file.
 
 # Known caveats
 
