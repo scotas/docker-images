@@ -1,0 +1,58 @@
+version: '3'
+
+services:
+  dev:
+    # Using a Dockerfile is optional, but included for completeness.
+    build: 
+      context: .
+      dockerfile: Dockerfile
+      # [Optional] You can use build args to set options. e.g. 'VARIANT' below affects the image in the Dockerfile
+      args: 
+        BRANCH: "v2.0.5"
+        ORACLE_PWD: "Oracle_2020"
+        # update with your local value, Ubuntu docker-ce is 999, Oracle Linux7 is 991
+        DOCKER_GID: 999
+
+    volumes:
+      # This is where VS Code should expect to find your project's source code and the value of "workspaceFolder" in .devcontainer/devcontainer.json
+      # - ..:/workspace:cached
+
+      # Uncomment the next line to use Docker from inside the container. See https://aka.ms/vscode-remote/samples/docker-from-docker-compose for details.
+      - /var/run/docker.sock:/var/run/docker.sock:rw
+
+    # Overrides default command so things don't shut down after the process ends.
+    command: /bin/sh -c "while sleep 1000; do :; done"  
+    
+    # Use "forwardPorts" in **devcontainer.json** to forward an app port locally. 
+    # (Adding the "ports" property to this file will not forward from a Codespace.)
+
+    # Uncomment the next line to use a non-root user for all processes - See https://aka.ms/vscode-remote/containers/non-root for details.
+    user: oracle
+
+    # Uncomment the next four lines if you will use a ptrace-based debugger like C++, Go, and Rust.
+    # cap_add:
+    #   - SYS_PTRACE
+    # security_opt:
+    #   - seccomp:unconfined
+    
+  # You can include other services not opened by VS Code as well
+  db:
+    image: oracle/database:18.4.0-xe
+    hostname: ols
+    volumes:
+      # Datos Informix en el NAS arrancar vacio con chown 200:302 (drwxr-xr-x), export/import con:
+      - /home/data/db/xe-18c:/opt/oracle/oradata
+      - /run/shm:/dev/shm
+      - ../../ols-scripts-xe/00-unzip-ols.sh:/opt/oracle/scripts/setup/00-unzip-ols.sh:ro
+      - ../../ols-scripts-xe/01-ols-ins.sh:/opt/oracle/scripts/setup/01-ols-ins.sh:ro
+      - ../../ols-scripts-xe/02-clean-up-files.sh:/opt/oracle/scripts/setup/02-clean-up-ols-files.sh:ro
+    ports:
+      - 1521:1521
+      - 9099:9099
+    environment:
+      ORACLE_PWD: "Oracle_2020"
+    # Runs app on the same network as the service container, allows "forwardPorts" in devcontainer.json function.
+    #network_mode: service:app
+
+    # As in the "app" service, use "forwardPorts" in **devcontainer.json** to forward an app port locally.
+
