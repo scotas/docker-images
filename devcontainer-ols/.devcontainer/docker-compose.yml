@@ -13,6 +13,11 @@ services:
         # update with your local value, Ubuntu docker-ce is 999, Oracle Linux7 is 991
         DOCKER_GID: 999
 
+    healthcheck:
+      test: exit 0
+      interval: 60s
+      timeout: 3s
+
     volumes:
       # This is where VS Code should expect to find your project's source code and the value of "workspaceFolder" in .devcontainer/devcontainer.json
       # - ..:/workspace:cached

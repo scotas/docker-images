@@ -32,14 +32,16 @@ ARG DOCKER_GID
 ENV DOCKER_GID ${DOCKER_GID:-999}
 
 USER	root
-RUN	yum -y --enablerepo ol7_optional_latest --enablerepo ol7_addons install ant ant-contrib ant-junit apache-ivy git docker-engine && \
+RUN	rpm -Uvh https://packages.microsoft.com/config/centos/8/packages-microsoft-prod.rpm && \
+	yum -y --enablerepo ol7_optional_latest --enablerepo ol7_addons install ant ant-contrib ant-junit apache-ivy git docker-engine aspnetcore-runtime-3.1 && \
+	rm -rf /var/tmp/* && \
 	yum clean all
 
 ADD	https://github.com/scotas/ols/releases/download/$BRANCH/ODCI.jar /home/oracle/
 ADD	https://github.com/scotas/ols/releases/download/$BRANCH/converter.jar /home/oracle/
 ADD	https://github.com/scotas/ols/releases/download/$BRANCH/initsoxx.sql /home/oracle/
 ADD	https://github.com/scotas/ols/releases/download/$BRANCH/translator.jar /home/oracle/
-ADD https://github.com/scotas/ols/releases/download/$BRANCH/sqljutl.sql /home/oracle/
+ADD	https://github.com/scotas/ols/releases/download/$BRANCH/sqljutl.sql /home/oracle/
 ADD	https://github.com/scotas/ols/releases/download/$BRANCH/valid.ols /home/oracle/
 
 # Source of Apache Solr/Lucene
@@ -49,6 +51,7 @@ COPY --from=Solr40Source --chown=oracle:oinstall /src/lucene_solr_4_0/ /home/ora
 COPY --from=OLSSource --chown=oracle:oinstall /src/ols/ /home/ols/
 
 RUN	usermod -G ${DOCKER_GID} oracle && \
+	curl -L https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.9.1+1/OpenJDK11U-jdk_x64_linux_hotspot_11.0.9.1_1.tar.gz | tar xfz - -C /usr/lib/jvm && \
 	mv $ORACLE_HOME/rdbms/jlib/ODCI.jar $ORACLE_HOME/rdbms/jlib/ODCI.jar.bak && \
 	mv /home/oracle/ODCI.jar $ORACLE_HOME/rdbms/jlib/ODCI.jar && \
 	mv /home/oracle/converter.jar $ORACLE_HOME/rdbms/jlib/converter.jar && \

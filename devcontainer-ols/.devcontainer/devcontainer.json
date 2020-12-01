@@ -17,7 +17,7 @@
 	"extensions": [
 		"vscjava.vscode-java-pack",
                 "ms-azuretools.vscode-docker",
-                "nickheap.vscode-ant"
+                "oracle.oracledevtools"
 	],
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
@@ -27,7 +27,7 @@
 	// 	"source=/etc/hosts,target=/etc/hosts,type=bind,consistency=cached"
 	//   ]
 	// Use 'postCreateCommand' to run commands after the container is created.
-    // "postCreateCommand": "java -version",
+	// "postCreateCommand": "cd /home/lucene;ant build-modules;cd ../solr;ant dist-core dist-solrj dist-contrib",
 
 	// Comment out to connect as root instead.
 	"remoteUser": "oracle"
