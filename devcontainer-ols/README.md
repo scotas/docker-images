@@ -45,3 +45,4 @@ By default this dev container project is using tag *v2.0.5* when building the im
 
 If you get this message when finishing the build process *Error: EACCES: permission denied, mkdir '/tmp/vsch/extensionsCache' just push button Retry on showed dialog.
 
+If you want to regenerate [ODCI.jar](https://github.com/scotas/ols/releases/download/v2.0.5/ODCI.jar) using Ant target [generate-ODCI-jar](https://github.com/scotas/ols/blob/v2.0.5/build.xml#L258) and an Exception is raised as *java.io.UnsupportedEncodingException: UTF8* just execute *unset LANG* and run again Ant target.
