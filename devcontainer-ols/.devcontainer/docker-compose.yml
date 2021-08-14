@@ -8,10 +8,15 @@ services:
       dockerfile: Dockerfile
       # [Optional] You can use build args to set options. e.g. 'VARIANT' below affects the image in the Dockerfile
       args: 
-        BRANCH: "v2.0.5"
-        ORACLE_PWD: "Oracle_2020"
-        # update with your local value, Ubuntu docker-ce is 999, Oracle Linux7 is 991
-        DOCKER_GID: 999
+        BRANCH: "${OLS_BRANCH}"
+        RELEASE: "${OLS_RELEASE}"
+        ORACLE_PWD: "${ORACLE_PWD}"
+        ORACLE_SID: "${SID}"
+        ORACLE_PDB: "${PDB}"
+        ORACLE_VERSION: "${VERSION}"
+        ORACLE_RU: "${RU}"
+        ORACLE_IMAGE: "${IMAGE}"
+        SRC_HOME: "${SRC_HOME}"
 
     healthcheck:
       test: exit 0
@@ -42,22 +47,41 @@ services:
     
   # You can include other services not opened by VS Code as well
   db:
-    image: oracle/database:18.4.0-xe
+    image: "${IMAGE}:${VERSION}.${RU}"
     hostname: ols
     volumes:
-      # Persistent directory for your Oracle datafiles, change first before opening in Dev Container UID:GID must be 54321:54321
-      - /home/data/db/xe-18c:/opt/oracle/oradata
+      - db_data:/opt/oracle/oradata
       - /run/shm:/dev/shm
-      - ../../ols-scripts-xe/00-unzip-ols.sh:/opt/oracle/scripts/setup/00-unzip-ols.sh:ro
-      - ../../ols-scripts-xe/01-ols-ins.sh:/opt/oracle/scripts/setup/01-ols-ins.sh:ro
-      - ../../ols-scripts-xe/02-clean-up-files.sh:/opt/oracle/scripts/setup/02-clean-up-ols-files.sh:ro
+      - ../../ols-scripts-r5/00-unzip-ols.sh:/opt/oracle/scripts/setup/00-unzip-ols.sh:ro
+      - ../../ols-scripts-r5/01-ols-ins.sh:/opt/oracle/scripts/setup/01-ols-ins.sh:ro
+      - ../../ols-scripts-r5/02-clean-up-ols-files.sh:/opt/oracle/scripts/setup/02-clean-up-ols-files.sh:ro
     ports:
       - 1521:1521
       - 9099:9099
     environment:
-      ORACLE_PWD: "Oracle_2020"
-    # Runs app on the same network as the service container, allows "forwardPorts" in devcontainer.json function.
-    #network_mode: service:app
+      ORACLE_PWD: "${ORACLE_PWD}"
+      ORACLE_SID: "${SID}"
+      ORACLE_PDB: "${PDB}"
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+        window: 120s
+      # resources:
+      #   limits:
+      #     cpus: '1.50'
+      #     memory: 3072M
+      #   reservations:
+      #     cpus: '1.50'
+      #     memory: 3072M
 
-    # As in the "app" service, use "forwardPorts" in **devcontainer.json** to forward an app port locally.
+volumes:
+  # Persistent directory for your Oracle datafiles, change first before opening in Dev Container UID:GID must be 54321:54321
+  db_data:
+    driver_opts:
+      type: none
+      device: /home/data/db/21c-ols
+      o: bind
 

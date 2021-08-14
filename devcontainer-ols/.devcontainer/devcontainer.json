@@ -10,14 +10,21 @@
 	// Set *default* container specific settings.json values on container create.
 	"settings": { 
                 "terminal.integrated.shell.linux": "/bin/bash",
-                "java.home": "/opt/oracle/product/18c/dbhomeXE/jdk"
+                "java.home": "/usr/lib/jvm/java-11-openjdk",
+				"java.project.referencedLibraries": [
+					"/home/ols/lib/*.jar",
+					"/home/ols/lib/*.zip",
+					"/home/lucene/build/**/*.jar",
+					"/home/lucene/test-framework/**/*.jar",
+					"/home/solr/dist/**/*.jar" 
+				]
 	},
 
 	// Add the IDs of extensions you want installed when the container is created.
 	"extensions": [
 		"vscjava.vscode-java-pack",
-                "ms-azuretools.vscode-docker",
-                "oracle.oracledevtools"
+		"ms-azuretools.vscode-docker",
+		"oracle.oracledevtools"
 	],
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
@@ -27,7 +34,7 @@
 	// 	"source=/etc/hosts,target=/etc/hosts,type=bind,consistency=cached"
 	//   ]
 	// Use 'postCreateCommand' to run commands after the container is created.
-	// "postCreateCommand": "cd /home/lucene;ant build-modules;cd ../solr;ant dist-core dist-solrj dist-contrib",
+	"postCreateCommand": "cd /home/lucene;ant build-modules;cd ../solr;ant dist-core dist-solrj dist-contrib;cd ../ols;ORACLE_HOME=$(dirname $(dirname `readlink -f /usr/bin/sqlplus`)) ant jar-core",
 
 	// Comment out to connect as root instead.
 	"remoteUser": "oracle"
