@@ -1,6 +1,6 @@
 #!/bin/bash
 OLS_VERSION=2.0.5
-ANT_VERSION=1.10.9
+ANT_VERSION=1.10.11
 ANT_CONTRIB_VERSION=1.0b3
 
 export ANT_HOME=/home/oracle/apache-ant-"$ANT_VERSION"

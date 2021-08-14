@@ -1,8 +1,8 @@
 #!/bin/bash
 OLS_VERSION=2.0.5
-ANT_VERSION=1.10.9
+ANT_VERSION=1.10.11
 ANT_CONTRIB_VERSION=1.0b3
-curl -s -L -o /home/oracle/apache-ant-"$ANT_VERSION"-bin.zip https://www-us.apache.org/dist/ant/binaries/apache-ant-"$ANT_VERSION"-bin.zip
+curl -s -L -o /home/oracle/apache-ant-"$ANT_VERSION"-bin.zip https://www.apache.org/dist/ant/binaries/apache-ant-"$ANT_VERSION"-bin.zip
 curl -s -L -o /home/oracle/ant-contrib-"$ANT_CONTRIB_VERSION"-bin.zip https://sourceforge.net/projects/ant-contrib/files/ant-contrib/"$ANT_CONTRIB_VERSION"/ant-contrib-"$ANT_CONTRIB_VERSION"-bin.zip/download
 
 curl -s -L -o /home/oracle/valid.ols "https://github.com/scotas/ols/releases/download/v$OLS_VERSION/valid.ols"
