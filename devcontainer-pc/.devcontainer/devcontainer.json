@@ -1,0 +1,34 @@
+// For format details, see https://aka.ms/vscode-remote/devcontainer.json or this file's README at:
+// https://github.com/microsoft/vscode-dev-containers/tree/v0.134.0/containers/php
+{
+	"name": "Scotas PushConnector",
+	"dockerComposeFile": "docker-compose.yml",
+	"service": "dev",
+	"runServices": ["dev","db","solr"],
+	"workspaceFolder": "/home/pc",
+	
+	// Set *default* container specific settings.json values on container create.
+	"settings": { 
+                "terminal.integrated.shell.linux": "/bin/bash",
+                "java.home": "/usr/lib/jvm/java"
+	},
+
+	// Add the IDs of extensions you want installed when the container is created.
+	"extensions": [
+                "ms-azuretools.vscode-docker",
+                "oracle.oracledevtools"
+	],
+
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	// "forwardPorts": [80]
+
+	// "mounts": [
+	// 	"source=/etc/hosts,target=/etc/hosts,type=bind,consistency=cached"
+	//   ]
+	// Use 'postCreateCommand' to run commands after the container is created.
+	// "postCreateCommand": "cd /home/lucene;ant build-modules;cd ../solr;ant dist-core dist-solrj dist-contrib",
+
+	// Comment out to connect as root instead.
+	"remoteUser": "oracle"
+}
+

@@ -1,0 +1,115 @@
+version: '3'
+
+services:
+  dev:
+    # Using a Dockerfile is optional, but included for completeness.
+    build: 
+      context: .
+      dockerfile: Dockerfile
+      # [Optional] You can use build args to set options. e.g. 'VARIANT' below affects the image in the Dockerfile
+      args: 
+        BRANCH: "${PC_BRANCH}"
+        RELEASE: "${PC_RELEASE}"
+        ORACLE_PWD: "${ORACLE_PWD}"
+        ORACLE_SID: "${SID}"
+        ORACLE_PDB: "${PDB}"
+        ORACLE_VERSION: "${VERSION}"
+        ORACLE_RU: "${RU}"
+        ORACLE_IMAGE: "${IMAGE}"
+        SRC_HOME: "${SRC_HOME}"
+
+    healthcheck:
+      test: exit 0
+      interval: 60s
+      timeout: 3s
+
+    volumes:
+      # This is where VS Code should expect to find your project's source code and the value of "workspaceFolder" in .devcontainer/devcontainer.json
+      # - ..:/workspace:cached
+
+      # Uncomment the next line to use Docker from inside the container. See https://aka.ms/vscode-remote/samples/docker-from-docker-compose for details.
+      - /var/run/docker.sock:/var/run/docker.sock:rw
+
+    # Overrides default command so things don't shut down after the process ends.
+    command: /bin/sh -c "while sleep 1000; do :; done"  
+    
+    # Use "forwardPorts" in **devcontainer.json** to forward an app port locally. 
+    # (Adding the "ports" property to this file will not forward from a Codespace.)
+
+    # Uncomment the next line to use a non-root user for all processes - See https://aka.ms/vscode-remote/containers/non-root for details.
+    user: oracle
+
+    # Uncomment the next four lines if you will use a ptrace-based debugger like C++, Go, and Rust.
+    # cap_add:
+    #   - SYS_PTRACE
+    # security_opt:
+    #   - seccomp:unconfined
+    
+  # You can include other services not opened by VS Code as well
+  db:
+    image: "${IMAGE}:${VERSION}.${RU}"
+    hostname: pc
+    volumes:
+      # Persistent directory for your Oracle datafiles, change first before opening in Dev Container UID:GID must be 54321:54321
+      - db_data:/opt/oracle/oradata
+      - /run/shm:/dev/shm
+      - ../../pc-18cXE/00-unzip-pc.sh:/opt/oracle/scripts/setup/00-unzip-pc.sh:ro
+      - ../../pc-18cXE/01-pc-ins.sh:/opt/oracle/scripts/setup/01-pc-ins.sh:ro
+      - ../../pc-18cXE/02-clean-up-files.sh:/opt/oracle/scripts/setup/02-clean-up-files.sh:ro
+    ports:
+      - 1521:1521
+    environment:
+      ORACLE_PWD: "${ORACLE_PWD}"
+      ORACLE_SID: "${SID}"
+      ORACLE_PDB: "${PDB}"
+      SOLR_HOST: "solr"
+      SOLR_PORT: "8983"
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+        window: 120s
+      resources:
+        limits:
+          cpus: '0.60'
+          memory: 2048M
+        reservations:
+          cpus: '0.60'
+          memory: 2048M
+  solr:
+    image: solr:latest
+    hostname: solr
+    volumes:
+      - solr_data:/var/solr/data
+    ports:
+      - 8983:8983
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+        window: 120s
+      resources:
+        limits:
+          cpus: '0.90'
+          memory: 1024M
+        reservations:
+          cpus: '0.90'
+          memory: 1024M
+
+volumes:
+  # Persistent directory for your Oracle datafiles, change first before opening in Dev Container UID:GID must be 54321:54321
+  db_data:
+    driver_opts:
+      type: none
+      device: /home/data/db/xe-18c-pc 
+      o: bind
+  # persistent solr data. UID/GID 8983:8983
+  solr_data:
+    driver_opts:
+      type: none
+      device: /home/data/solr 
+      o: bind
