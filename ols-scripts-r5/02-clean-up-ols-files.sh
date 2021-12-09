@@ -1,5 +1,5 @@
 #!/bin/bash
 echo "Cleanup temporary files"
-rm -f /home/oracle/*.jar /home/oracle/*.zip
-rm -rf /home/oracle/ols
+rm -f $HOME/*.jar $HOME/*.zip
+rm -rf $HOME/ols
 echo "OLS Installation Done"
