@@ -53,12 +53,12 @@ services:
       # Persistent directory for your Oracle datafiles, change first before opening in Dev Container UID:GID must be 54321:54321
       - db_data:/opt/oracle/oradata
       - /run/shm:/dev/shm
-      - ../../pc-18cXE/00-unzip-pc.sh:/opt/oracle/scripts/setup/00-unzip-pc.sh:ro
-      - ../../pc-18cXE/01-pc-ins.sh:/opt/oracle/scripts/setup/01-pc-ins.sh:ro
-      - ../../pc-18cXE/02-clean-up-files.sh:/opt/oracle/scripts/setup/02-clean-up-files.sh:ro
+      #- ../../pc-18cXE:/opt/oracle/scripts/setup:ro
+      - ../../pc-21cXE:/container-entrypoint-initdb.d:ro
     ports:
       - 1521:1521
     environment:
+      ORACLE_PASSWORD: "${ORACLE_PWD}"
       ORACLE_PWD: "${ORACLE_PWD}"
       ORACLE_SID: "${SID}"
       ORACLE_PDB: "${PDB}"
@@ -105,7 +105,7 @@ volumes:
   db_data:
     driver_opts:
       type: none
-      device: /home/data/db/xe-18c-pc 
+      device: /home/data/db/xe-21c-pc 
       o: bind
   # persistent solr data. UID/GID 8983:8983
   solr_data:
