@@ -52,13 +52,13 @@ services:
     volumes:
       - db_data:/opt/oracle/oradata
       - /run/shm:/dev/shm
-      - ../../ols-scripts-r5/00-unzip-ols.sh:/opt/oracle/scripts/setup/00-unzip-ols.sh:ro
-      - ../../ols-scripts-r5/01-ols-ins.sh:/opt/oracle/scripts/setup/01-ols-ins.sh:ro
-      - ../../ols-scripts-r5/02-clean-up-ols-files.sh:/opt/oracle/scripts/setup/02-clean-up-ols-files.sh:ro
+      #- ../../ols-scripts-r5:/opt/oracle/scripts/setup:ro
+      - ../../ols-scripts-r5:/container-entrypoint-initdb.d:ro
     ports:
       - 1521:1521
       - 9099:9099
     environment:
+      ORACLE_PASSWORD: "${ORACLE_PWD}"
       ORACLE_PWD: "${ORACLE_PWD}"
       ORACLE_SID: "${SID}"
       ORACLE_PDB: "${PDB}"
@@ -82,6 +82,6 @@ volumes:
   db_data:
     driver_opts:
       type: none
-      device: /home/data/db/21c-ols
+      device: /home/data/db/21c-xe
       o: bind
 
