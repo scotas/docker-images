@@ -1,6 +1,6 @@
 #!/bin/bash
 OLS_VERSION=2.0.5
-ANT_VERSION=1.10.11
+ANT_VERSION=1.10.13
 ANT_CONTRIB_VERSION=1.0b3
 curl -s -L -o $HOME/apache-ant-"$ANT_VERSION"-bin.zip https://www.apache.org/dist/ant/binaries/apache-ant-"$ANT_VERSION"-bin.zip
 curl -s -L -o $HOME/ant-contrib-"$ANT_CONTRIB_VERSION"-bin.zip https://sourceforge.net/projects/ant-contrib/files/ant-contrib/"$ANT_CONTRIB_VERSION"/ant-contrib-"$ANT_CONTRIB_VERSION"-bin.zip/download
