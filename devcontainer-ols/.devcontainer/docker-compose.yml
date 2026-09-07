@@ -51,14 +51,14 @@ services:
     hostname: ols
     volumes:
       - db_data:/opt/oracle/oradata
-      - /run/shm:/dev/shm
-      #- ../../ols-scripts-r5:/opt/oracle/scripts/setup:ro
-      - ../../ols-scripts-r5:/container-entrypoint-initdb.d:ro
+      - ../../ols-scripts-r6:/container-entrypoint-initdb.d:ro
     ports:
-      - 1521:1521
+      - 2521:1521
       - 9099:9099
     environment:
       ORACLE_PASSWORD: "${ORACLE_PWD}"
+      APP_USER: "scott"
+      APP_PASSWORD: "tiger"
       ORACLE_PWD: "${ORACLE_PWD}"
       ORACLE_SID: "${SID}"
       ORACLE_PDB: "${PDB}"
@@ -80,8 +80,3 @@ services:
 volumes:
   # Persistent directory for your Oracle datafiles, change first before opening in Dev Container UID:GID must be 54321:54321
   db_data:
-    driver_opts:
-      type: none
-      device: /home/data/db/21c-xe
-      o: bind
-

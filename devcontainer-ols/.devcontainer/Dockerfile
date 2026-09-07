@@ -4,9 +4,9 @@
 ARG ORACLE_VERSION
 ARG ORACLE_RU
 ARG ORACLE_IMAGE
-FROM  "${ORACLE_IMAGE}:${ORACLE_VERSION}.${ORACLE_RU}" AS RDBMS_Release
+FROM  "${ORACLE_IMAGE}:${ORACLE_VERSION}.${ORACLE_RU}" AS rdbms_release
 
-FROM alpine:latest AS Solr40Source
+FROM alpine:latest AS solr40source
 LABEL maintainer="Marcelo Ochoa <mochoa@scotas.com>"
 
 RUN apk add --update subversion curl && rm -rf /var/cache/apk/*
@@ -17,7 +17,7 @@ ADD	ols-solr-lucene.patch /src/lucene_solr_4_0/
 WORKDIR /src/lucene_solr_4_0
 RUN	svn patch /src/lucene_solr_4_0/ols-solr-lucene.patch
 
-FROM alpine/git:latest AS OLSSource
+FROM alpine/git:latest AS olssource
 LABEL maintainer="Marcelo Ochoa <mochoa@scotas.com>"
 ARG REPO_URL
 ENV REPO_URL ${REPO_URL:-https://github.com/scotas/ols.git}
@@ -33,12 +33,14 @@ FROM  oraclelinux:8-slim
 LABEL maintainer="Marcelo Ochoa <mochoa@scotas.com>"
 
 USER root
-RUN microdnf install oracle-instantclient-release-el8 zip unzip libnsl libaio && \
+RUN microdnf install oracle-instantclient-release-23ai-el8 zip unzip libnsl libaio curl tar && \
     rpm -Uvh https://packages.microsoft.com/config/centos/8/packages-microsoft-prod.rpm && \
     dnf config-manager --add-repo=https://download.docker.com/linux/centos/docker-ce.repo && \
     microdnf install --enablerepo ol8_appstream --enablerepo ol8_addons --enablerepo ol8_codeready_builder \
     	oracle-instantclient-basic oracle-instantclient-devel oracle-instantclient-sqlplus oracle-instantclient-jdbc \
-        ant ant-contrib ant-junit apache-ivy git aspnetcore-runtime-3.1 docker-ce java-11-openjdk-devel --nobest && \
+        ant ant-contrib ant-junit apache-ivy git docker-ce java-11-openjdk-devel --nobest && \
+    curl -sSL https://dot.net/v1/dotnet-install.sh | bash -s -- --runtime aspnetcore --version 3.1.32 --install-dir /usr/share/dotnet && \
+    ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet && \
     echo 2 | alternatives --config java && \
     groupadd -g 54321 oinstall && useradd -g oinstall -u 54321 -N -G docker -m oracle && \
     echo 'export ORACLE_HOME=$(dirname $(dirname `readlink -f /usr/bin/sqlplus`))' >> /home/oracle/.bashrc && \
@@ -49,10 +51,10 @@ RUN microdnf install oracle-instantclient-release-el8 zip unzip libnsl libaio &&
     microdnf clean all
 
 # Source of Apache Solr/Lucene
-COPY --from=Solr40Source --chown=oracle:oinstall /src/lucene_solr_4_0/ /home/oracle/lucene_solr_4_0/
+COPY --from=solr40source --chown=oracle:oinstall /src/lucene_solr_4_0/ /home/oracle/lucene_solr_4_0/
 
 # Source of Scotas OLS
-COPY --from=OLSSource --chown=oracle:oinstall /src/ols/ /home/ols/
+COPY --from=olssource --chown=oracle:oinstall /src/ols/ /home/ols/
 
 ARG ORACLE_VERSION
 ARG ORACLE_PDB
@@ -63,25 +65,24 @@ ARG RELEASE
 ENV RELEASE ${RELEASE}
 
 # RDBMS Required Libs
-COPY --from=RDBMS_Release --chown=oracle:oinstall "${SRC_HOME}/sqlj/lib/runtime12.jar" /home/oracle/
-COPY --from=RDBMS_Release --chown=oracle:oinstall "${SRC_HOME}/rdbms/jlib/CartridgeServices.jar" /home/oracle/
-COPY --from=RDBMS_Release --chown=oracle:oinstall "${SRC_HOME}/rdbms/jlib/xdb.jar" /home/oracle/
-COPY --from=RDBMS_Release --chown=oracle:oinstall "${SRC_HOME}/lib/xmlparserv2.jar" /home/oracle/
-COPY --from=RDBMS_Release --chown=oracle:oinstall "${SRC_HOME}/javavm/lib/aurora.zip" /home/oracle/
-COPY --from=RDBMS_Release --chown=oracle:oinstall "${SRC_HOME}/rdbms/jlib/servlet.jar" /home/oracle/
+COPY --from=rdbms_release --chown=oracle:oinstall "${SRC_HOME}/rdbms/jlib/ODCI.jar" /home/oracle/
+COPY --from=rdbms_release --chown=oracle:oinstall "${SRC_HOME}/sqlj/lib/runtime12.jar" /home/oracle/
+COPY --from=rdbms_release --chown=oracle:oinstall "${SRC_HOME}/rdbms/jlib/CartridgeServices.jar" /home/oracle/
+COPY --from=rdbms_release --chown=oracle:oinstall "${SRC_HOME}/rdbms/jlib/xdb.jar" /home/oracle/
+COPY --from=rdbms_release --chown=oracle:oinstall "${SRC_HOME}/lib/xmlparserv2.jar" /home/oracle/
+COPY --from=rdbms_release --chown=oracle:oinstall "${SRC_HOME}/javavm/lib/aurora.zip" /home/oracle/
+COPY --from=rdbms_release --chown=oracle:oinstall "${SRC_HOME}/rdbms/jlib/servlet.jar" /home/oracle/
 # Required bin
-COPY --from=RDBMS_Release --chown=oracle:oinstall "${SRC_HOME}/bin/wrap"  /home/oracle/
-COPY --from=RDBMS_Release --chown=oracle:oinstall "${SRC_HOME}/lib/libclntsh.so.${ORACLE_VERSION}.1"  /home/oracle/
-COPY --from=RDBMS_Release --chown=oracle:oinstall "${SRC_HOME}/lib/libclntshcore.so.${ORACLE_VERSION}.1"  /home/oracle/
-COPY --from=RDBMS_Release --chown=oracle:oinstall "${SRC_HOME}/lib/libmql1.so"  /home/oracle/
-COPY --from=RDBMS_Release --chown=oracle:oinstall "${SRC_HOME}/lib/libipc1.so"  /home/oracle/
-COPY --from=RDBMS_Release --chown=oracle:oinstall "${SRC_HOME}/lib/libnnz${ORACLE_VERSION}.so"  /home/oracle/
-COPY --from=RDBMS_Release --chown=oracle:oinstall "${SRC_HOME}/lib/libons.so"  /home/oracle/
+COPY --from=rdbms_release --chown=oracle:oinstall "${SRC_HOME}/bin/wrap"  /home/oracle/
+COPY --from=rdbms_release --chown=oracle:oinstall "${SRC_HOME}/lib/libclntsh.so.${ORACLE_VERSION}.1"  /home/oracle/
+COPY --from=rdbms_release --chown=oracle:oinstall "${SRC_HOME}/lib/libclntshcore.so.${ORACLE_VERSION}.1"  /home/oracle/
+COPY --from=rdbms_release --chown=oracle:oinstall "${SRC_HOME}/lib/libmql1.so"  /home/oracle/
+COPY --from=rdbms_release --chown=oracle:oinstall "${SRC_HOME}/lib/libipc1.so"  /home/oracle/
+COPY --from=rdbms_release --chown=oracle:oinstall "${SRC_HOME}/lib/libnnz.so"  /home/oracle/
+COPY --from=rdbms_release --chown=oracle:oinstall "${SRC_HOME}/lib/libons.so"  /home/oracle/
 
 
-ADD  https://github.com/scotas/ols/releases/download/$RELEASE/ODCI.jar /home/oracle/
 ADD  https://github.com/scotas/ols/releases/download/$RELEASE/converter.jar /home/oracle/
-ADD  https://github.com/scotas/ols/releases/download/$RELEASE/initsoxx.sql /home/oracle/
 ADD  https://github.com/scotas/ols/releases/download/$RELEASE/translator.jar /home/oracle/
 ADD  https://github.com/scotas/ols/releases/download/$RELEASE/sqljutl.sql /home/oracle/
 ADD  https://github.com/scotas/ols/releases/download/$RELEASE/valid.ols /home/oracle/
@@ -100,7 +101,6 @@ RUN export ORACLE_HOME=$(dirname $(dirname `readlink -f /usr/bin/sqlplus`)) && \
     mkdir -p $ORACLE_HOME/network/admin/ && \
     mv /home/oracle/ODCI.jar $ORACLE_HOME/rdbms/jlib/ODCI.jar && \
     mv /home/oracle/servlet.jar $ORACLE_HOME/rdbms/jlib/servlet.jar && \
-    mv /home/oracle/initsoxx.sql $ORACLE_HOME/rdbms/admin/initsoxx.sql && \
     mv /home/oracle/converter.jar $ORACLE_HOME/rdbms/jlib/converter.jar && \
     mv /home/oracle/translator.jar $ORACLE_HOME/rdbms/jlib/translator.jar && \
     mv /home/oracle/sqljutl.sql $ORACLE_HOME/rdbms/jlib/sqljutl.sql && \
@@ -114,7 +114,7 @@ RUN export ORACLE_HOME=$(dirname $(dirname `readlink -f /usr/bin/sqlplus`)) && \
     mv /home/oracle/libclntshcore.so.${ORACLE_VERSION}.1 $ORACLE_HOME/lib && \
     mv /home/oracle/libmql1.so $ORACLE_HOME/lib && \
     mv /home/oracle/libipc1.so $ORACLE_HOME/lib && \
-    mv /home/oracle/libnnz${ORACLE_VERSION}.so $ORACLE_HOME/lib && \
+    mv /home/oracle/libnnz.so $ORACLE_HOME/lib && \
     mv /home/oracle/libons.so $ORACLE_HOME/lib && \
     mkdir -p /home/ols/bin/com/scotas/license && \
     mv /home/oracle/valid.ols /home/ols/bin/com/scotas/license && \
