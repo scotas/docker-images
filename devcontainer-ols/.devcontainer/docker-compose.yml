@@ -50,6 +50,7 @@ services:
     image: "${IMAGE}:${VERSION}.${RU}"
     hostname: ols
     volumes:
+      - /run/shm:/dev/shm
       - db_data:/opt/oracle/oradata
       - ../../ols-scripts-r6:/container-entrypoint-initdb.d:ro
     ports:
@@ -58,7 +59,7 @@ services:
     environment:
       ORACLE_PASSWORD: "${ORACLE_PWD}"
       APP_USER: "scott"
-      APP_PASSWORD: "tiger"
+      APP_USER_PASSWORD: "tiger"
       ORACLE_PWD: "${ORACLE_PWD}"
       ORACLE_SID: "${SID}"
       ORACLE_PDB: "${PDB}"
