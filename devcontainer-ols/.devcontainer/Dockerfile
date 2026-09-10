@@ -81,10 +81,6 @@ COPY --from=rdbms_release --chown=oracle:oinstall "${SRC_HOME}/lib/libipc1.so"  
 COPY --from=rdbms_release --chown=oracle:oinstall "${SRC_HOME}/lib/libnnz.so"  /home/oracle/
 COPY --from=rdbms_release --chown=oracle:oinstall "${SRC_HOME}/lib/libons.so"  /home/oracle/
 
-
-ADD  https://github.com/scotas/ols/releases/download/$RELEASE/converter.jar /home/oracle/
-ADD  https://github.com/scotas/ols/releases/download/$RELEASE/translator.jar /home/oracle/
-ADD  https://github.com/scotas/ols/releases/download/$RELEASE/sqljutl.sql /home/oracle/
 ADD  https://github.com/scotas/ols/releases/download/$RELEASE/valid.ols /home/oracle/
 
 RUN ln -s /home/oracle/lucene_solr_4_0/solr /home/solr && \
@@ -101,9 +97,6 @@ RUN export ORACLE_HOME=$(dirname $(dirname `readlink -f /usr/bin/sqlplus`)) && \
     mkdir -p $ORACLE_HOME/network/admin/ && \
     mv /home/oracle/ODCI.jar $ORACLE_HOME/rdbms/jlib/ODCI.jar && \
     mv /home/oracle/servlet.jar $ORACLE_HOME/rdbms/jlib/servlet.jar && \
-    mv /home/oracle/converter.jar $ORACLE_HOME/rdbms/jlib/converter.jar && \
-    mv /home/oracle/translator.jar $ORACLE_HOME/rdbms/jlib/translator.jar && \
-    mv /home/oracle/sqljutl.sql $ORACLE_HOME/rdbms/jlib/sqljutl.sql && \
     mv /home/oracle/runtime12.jar $ORACLE_HOME/sqlj/lib/runtime12.jar && \
     mv /home/oracle/CartridgeServices.jar $ORACLE_HOME/rdbms/jlib/CartridgeServices.jar && \
     mv /home/oracle/xdb.jar $ORACLE_HOME/rdbms/jlib/xdb.jar && \
